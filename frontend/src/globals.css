@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
   /* Font families — loaded via Google Fonts <link> in index.html */
@@ -44,6 +45,60 @@
   --color-primary-hover: var(--primary-hover);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+/* ─── shadcn/ui design tokens ───
+   Added additively on top of the existing brand variables above. The app's
+   components reference brand vars directly via var(); shadcn primitives use the
+   utility classes generated from the @theme mapping below. The two coexist. */
+:root {
+  --radius: 0.65rem;
+  --card: #ffffff;
+  --card-foreground: var(--foreground);
+  --popover: #ffffff;
+  --popover-foreground: var(--foreground);
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1a1d21;
+  --muted-bg: #f1f5f9;
+  --muted-foreground: #6b7280;
+  --accent: #ecfdf5;
+  --accent-foreground: #0f766e;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --input: #d1d5db;
+  --ring: #0f766e;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  /* Give bare `border` / `outline` utilities the brand border color so shadcn
+     primitives that omit an explicit color render with the right hairline. */
+  *,
+  ::after,
+  ::before {
+    border-color: var(--border);
+  }
 }
 
 body {
