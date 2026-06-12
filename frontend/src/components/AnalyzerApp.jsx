@@ -1,15 +1,12 @@
-"use client";
-
 import { Header } from "@/components/Header";
 import { MostLikelyCauseHero } from "@/components/insights/MostLikelyCauseHero";
 import { MedicationSection } from "@/components/MedicationSection";
 import { buildPreviewAnalysis, getPrimaryInsight } from "@/lib/analysis/insights";
-import type { ReportData } from "@/lib/pdf/generateReport";
 import { resolveMedicinePair } from "@/lib/resolveMedicinePair";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export function AnalyzerApp() {
-  const [medications, setMedications] = useState<string[]>([]);
+  const [medications, setMedications] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [previewKey, setPreviewKey] = useState(0);
 
@@ -17,7 +14,7 @@ export function AnalyzerApp() {
   const primaryInsight = getPrimaryInsight(preview, medications);
   const isReportReady = medications.length >= 2 && !!primaryInsight && !isAnalyzing;
 
-  const reportData = useMemo((): ReportData | null => {
+  const reportData = useMemo(() => {
     if (!preview || !primaryInsight) return null;
     const [medicineA, medicineB] = resolveMedicinePair(primaryInsight, medications);
     return {
@@ -44,11 +41,11 @@ export function AnalyzerApp() {
     return () => clearTimeout(timer);
   }, [medications]);
 
-  const addMedication = useCallback((med: string) => {
+  const addMedication = useCallback((med) => {
     setMedications((prev) => (prev.includes(med) ? prev : [...prev, med]));
   }, []);
 
-  const removeMedication = useCallback((med: string) => {
+  const removeMedication = useCallback((med) => {
     setMedications((prev) => prev.filter((m) => m !== med));
   }, []);
 

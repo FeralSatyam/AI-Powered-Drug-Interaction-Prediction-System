@@ -4,15 +4,6 @@ import { ReasoningBlock } from "@/components/results/ReasoningBlock";
 import { RecommendationList } from "@/components/results/RecommendationList";
 import { RiskHeroCard } from "@/components/results/RiskHeroCard";
 import { buildPreviewAnalysis } from "@/lib/analysis/insights";
-import type { AnalysisResult } from "@/lib/types";
-
-interface ResultsSectionProps {
-  result: AnalysisResult;
-  medications: string[];
-  symptoms: string[];
-  onEdit: () => void;
-  onNewAnalysis: () => void;
-}
 
 export function ResultsSection({
   result,
@@ -20,7 +11,7 @@ export function ResultsSection({
   symptoms,
   onEdit,
   onNewAnalysis,
-}: ResultsSectionProps) {
+}) {
   const preview = buildPreviewAnalysis(medications, symptoms);
 
   return (

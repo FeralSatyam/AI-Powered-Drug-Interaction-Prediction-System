@@ -1,22 +1,13 @@
-"use client";
-
 import { Chip } from "@/components/ui/Chip";
 import { SearchCombobox } from "@/components/ui/SearchCombobox";
 import { searchMedications } from "@/lib/data/medications";
-
-interface MedicationSectionProps {
-  medications: string[];
-  onAdd: (med: string) => void;
-  onRemove: (med: string) => void;
-  disabled?: boolean;
-}
 
 export function MedicationSection({
   medications,
   onAdd,
   onRemove,
   disabled = false,
-}: MedicationSectionProps) {
+}) {
   return (
     <section
       className="rounded-xl border border-[var(--border)] bg-white p-6 shadow-sm"

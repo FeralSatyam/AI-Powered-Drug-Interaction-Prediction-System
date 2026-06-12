@@ -1,14 +1,6 @@
-"use client";
-
 import { DownloadPdfButton } from "@/components/DownloadPdfButton";
-import type { ReportData } from "@/lib/pdf/generateReport";
 
-interface HeaderProps {
-  reportData: ReportData | null;
-  isReportReady?: boolean;
-}
-
-export function Header({ reportData, isReportReady = false }: HeaderProps) {
+export function Header({ reportData, isReportReady = false }) {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-white/95 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-white/90">

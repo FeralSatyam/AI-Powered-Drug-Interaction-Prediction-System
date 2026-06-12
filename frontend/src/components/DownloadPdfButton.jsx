@@ -1,20 +1,12 @@
-"use client";
-
-import { generateMedicationReportPdf, type ReportData } from "@/lib/pdf/generateReport";
+import { generateMedicationReportPdf } from "@/lib/pdf/generateReport";
 import { useCallback, useState } from "react";
-
-interface DownloadPdfButtonProps {
-  reportData: ReportData | null;
-  isReady?: boolean;
-  className?: string;
-}
 
 export function DownloadPdfButton({
   reportData,
   isReady = false,
   className = "",
-}: DownloadPdfButtonProps) {
-  const [state, setState] = useState<"idle" | "loading" | "success">("idle");
+}) {
+  const [state, setState] = useState("idle");
 
   const canDownload = isReady && !!reportData && state !== "loading";
   const isPending = !isReady || !reportData;

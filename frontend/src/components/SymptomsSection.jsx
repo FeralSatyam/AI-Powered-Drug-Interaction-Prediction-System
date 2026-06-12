@@ -1,20 +1,6 @@
-"use client";
-
 import { Chip } from "@/components/ui/Chip";
 import { SearchCombobox } from "@/components/ui/SearchCombobox";
 import { COMMON_SYMPTOMS, searchSymptoms } from "@/lib/data/symptoms";
-import type { PreviewAnalysis } from "@/lib/types";
-
-interface SymptomsSectionProps {
-  symptoms: string[];
-  medications: string[];
-  onAdd: (symptom: string) => void;
-  onRemove: (symptom: string) => void;
-  disabled?: boolean;
-  preview?: PreviewAnalysis | null;
-  isAnalyzing?: boolean;
-  onOpenInsights?: () => void;
-}
 
 const QUICK_SYMPTOMS = COMMON_SYMPTOMS.slice(0, 6);
 
@@ -27,8 +13,8 @@ export function SymptomsSection({
   preview = null,
   isAnalyzing = false,
   onOpenInsights,
-}: SymptomsSectionProps) {
-  function toggleSymptom(symptom: string) {
+}) {
+  function toggleSymptom(symptom) {
     if (symptoms.includes(symptom)) {
       onRemove(symptom);
     } else {
