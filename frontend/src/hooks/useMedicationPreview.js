@@ -1,23 +1,13 @@
-"use client";
-
 import { buildPreviewAnalysis } from "@/lib/analysis/insights";
-import type { PreviewAnalysis } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
-
-interface UseMedicationPreviewOptions {
-  medications: string[];
-  symptoms: string[];
-  debounceMs?: number;
-  autoOpenModal?: boolean;
-}
 
 export function useMedicationPreview({
   medications,
   symptoms,
   debounceMs = 700,
   autoOpenModal = true,
-}: UseMedicationPreviewOptions) {
-  const [preview, setPreview] = useState<PreviewAnalysis | null>(null);
+}) {
+  const [preview, setPreview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const prevInteractionCount = useRef(0);

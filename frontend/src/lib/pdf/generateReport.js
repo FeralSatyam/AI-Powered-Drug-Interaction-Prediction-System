@@ -1,38 +1,22 @@
-import type { CauseInsight, PreviewAnalysis } from "@/lib/types";
 import { jsPDF } from "jspdf";
-
-export interface ReportData {
-  medications: string[];
-  insight: CauseInsight;
-  preview: PreviewAnalysis;
-  medicineA: string;
-  medicineB: string;
-}
 
 const MARGIN = 20;
 const PAGE_WIDTH = 210;
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
 
-function severityLabel(severity: string): string {
+function severityLabel(severity) {
   if (severity === "high") return "High Risk";
   if (severity === "moderate") return "Moderate Risk";
   return "Low Risk";
 }
 
-function addWrappedText(
-  doc: jsPDF,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number
-): number {
+function addWrappedText(doc, text, x, y, maxWidth, lineHeight) {
   const lines = doc.splitTextToSize(text, maxWidth);
   doc.text(lines, x, y);
   return y + lines.length * lineHeight;
 }
 
-export function generateMedicationReportPdf(data: ReportData): void {
+export function generateMedicationReportPdf(data) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   let y = MARGIN;
 
