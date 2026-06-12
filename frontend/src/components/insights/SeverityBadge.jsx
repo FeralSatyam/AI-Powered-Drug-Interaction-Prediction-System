@@ -1,9 +1,4 @@
-import type { VisualSeverity } from "@/lib/types";
-
-const SEVERITY_CONFIG: Record<
-  VisualSeverity,
-  { label: string; dot: string; className: string }
-> = {
+const SEVERITY_CONFIG = {
   low: {
     label: "Low Risk",
     dot: "",
@@ -21,11 +16,7 @@ const SEVERITY_CONFIG: Record<
   },
 };
 
-interface SeverityBadgeProps {
-  severity: VisualSeverity;
-}
-
-export function SeverityBadge({ severity }: SeverityBadgeProps) {
+export function SeverityBadge({ severity }) {
   const config = SEVERITY_CONFIG[severity];
 
   return (

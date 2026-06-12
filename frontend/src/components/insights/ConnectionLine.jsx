@@ -1,15 +1,10 @@
-interface ConnectionLineProps {
-  severity: "low" | "moderate" | "high";
-  animated?: boolean;
-}
-
 const GLOW_COLORS = {
   low: "#059669",
   moderate: "#d97706",
   high: "#dc2626",
 };
 
-export function ConnectionLine({ severity, animated = true }: ConnectionLineProps) {
+export function ConnectionLine({ severity, animated = true }) {
   const color = GLOW_COLORS[severity];
 
   return (

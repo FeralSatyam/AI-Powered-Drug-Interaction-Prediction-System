@@ -1,14 +1,8 @@
-interface MedicationCardVisualProps {
-  name: string;
-  slideFrom?: "left" | "right" | "none";
-  delay?: number;
-}
-
 export function MedicationCardVisual({
   name,
   slideFrom = "none",
   delay = 0,
-}: MedicationCardVisualProps) {
+}) {
   const slideClass =
     slideFrom === "left"
       ? "animate-slide-from-left"

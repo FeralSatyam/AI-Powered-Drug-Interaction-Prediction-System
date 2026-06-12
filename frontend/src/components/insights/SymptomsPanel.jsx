@@ -1,4 +1,4 @@
-const SYMPTOM_DETAILS: Record<string, { description: string }> = {
+const SYMPTOM_DETAILS = {
   Nausea: {
     description: "A feeling of sickness with an urge to vomit, commonly linked to medication side effects or drug interactions.",
   },
@@ -21,18 +21,14 @@ const SYMPTOM_DETAILS: Record<string, { description: string }> = {
 
 const FEATURED_SYMPTOMS = ["Nausea", "Vomiting"];
 
-interface SymptomsPanelProps {
-  symptoms: string[];
-}
-
-function normalizeSymptom(s: string): string {
+function normalizeSymptom(s) {
   return s.trim().toLowerCase();
 }
 
-function resolveDisplaySymptoms(symptoms: string[]): string[] {
+function resolveDisplaySymptoms(symptoms) {
   const normalized = symptoms.map((s) => s.trim());
-  const featured: string[] = [];
-  const others: string[] = [];
+  const featured = [];
+  const others = [];
 
   for (const name of FEATURED_SYMPTOMS) {
     const match = normalized.find((s) => normalizeSymptom(s) === normalizeSymptom(name));
@@ -53,7 +49,7 @@ function resolveDisplaySymptoms(symptoms: string[]): string[] {
   return normalized.length > 0 ? normalized.slice(0, 4) : FEATURED_SYMPTOMS;
 }
 
-export function SymptomsPanel({ symptoms }: SymptomsPanelProps) {
+export function SymptomsPanel({ symptoms }) {
   const displaySymptoms = resolveDisplaySymptoms(symptoms);
 
   return (

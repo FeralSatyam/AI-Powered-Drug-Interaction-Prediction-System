@@ -1,26 +1,16 @@
-"use client";
-
 import { ConfidenceMeter } from "@/components/insights/ConfidenceMeter";
 import { ConnectionLine } from "@/components/insights/ConnectionLine";
 import { MedicationCardVisual } from "@/components/insights/MedicationCardVisual";
 import { SeverityBadge } from "@/components/insights/SeverityBadge";
 import { SymptomIcon } from "@/components/insights/SymptomIcon";
-import type { CauseInsight } from "@/lib/types";
 import { useEffect, useState } from "react";
-
-interface CauseInsightCardProps {
-  insight: CauseInsight;
-  index: number;
-  isPrimary?: boolean;
-  autoExpand?: boolean;
-}
 
 export function CauseInsightCard({
   insight,
   index,
   isPrimary = false,
   autoExpand = false,
-}: CauseInsightCardProps) {
+}) {
   const [expanded, setExpanded] = useState(false);
   const [showWhy, setShowWhy] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);

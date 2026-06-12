@@ -1,4 +1,4 @@
-const SYMPTOM_ICONS: Record<string, { emoji: string; label: string }> = {
+const SYMPTOM_ICONS = {
   Anxiety: { emoji: "😰", label: "Anxiety" },
   Vomiting: { emoji: "🤮", label: "Vomiting" },
   Dizziness: { emoji: "😵‍💫", label: "Dizziness" },
@@ -21,13 +21,7 @@ const SYMPTOM_ICONS: Record<string, { emoji: string; label: string }> = {
   "Dry Mouth": { emoji: "👄", label: "Dry mouth" },
 };
 
-interface SymptomIconProps {
-  symptom: string;
-  pulsing?: boolean;
-  delay?: number;
-}
-
-export function SymptomIcon({ symptom, pulsing = false, delay = 0 }: SymptomIconProps) {
+export function SymptomIcon({ symptom, pulsing = false, delay = 0 }) {
   const config = SYMPTOM_ICONS[symptom] ?? { emoji: "⚕️", label: symptom };
 
   return (

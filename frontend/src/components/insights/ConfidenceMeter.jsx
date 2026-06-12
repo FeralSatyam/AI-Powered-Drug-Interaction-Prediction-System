@@ -1,10 +1,4 @@
-interface ConfidenceMeterProps {
-  value: number;
-  animated?: boolean;
-  delay?: number;
-}
-
-export function ConfidenceMeter({ value, animated = true, delay = 0 }: ConfidenceMeterProps) {
+export function ConfidenceMeter({ value, animated = true, delay = 0 }) {
   return (
     <div className="w-full">
       <div className="mb-1.5 flex items-center justify-between">
@@ -19,7 +13,7 @@ export function ConfidenceMeter({ value, animated = true, delay = 0 }: Confidenc
             animated ? "animate-confidence-fill" : ""
           }`}
           style={{
-            ["--confidence-target" as string]: `${value}%`,
+            ["--confidence-target"]: `${value}%`,
             animationDelay: `${delay}ms`,
             width: animated ? undefined : `${value}%`,
           }}

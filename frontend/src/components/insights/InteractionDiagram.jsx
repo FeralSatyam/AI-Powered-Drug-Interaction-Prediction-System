@@ -1,11 +1,4 @@
-import type { VisualSeverity } from "@/lib/types";
-
-interface MedicineCircleProps {
-  label: string;
-  name: string;
-}
-
-function MedicineCircle({ label, name }: MedicineCircleProps) {
+function MedicineCircle({ label, name }) {
   return (
     <div className="flex flex-col items-center gap-2">
       <div
@@ -36,16 +29,7 @@ function MedicineCircle({ label, name }: MedicineCircleProps) {
   );
 }
 
-const CONNECTOR_CONFIG: Record<
-  VisualSeverity,
-  {
-    message: string;
-    lineClass: string;
-    nodeBorderClass: string;
-    pillClass: string;
-    showRiskLabel: boolean;
-  }
-> = {
+const CONNECTOR_CONFIG = {
   low: {
     message: "Possible interaction affecting you",
     lineClass: "bg-emerald-400",
@@ -69,11 +53,7 @@ const CONNECTOR_CONFIG: Record<
   },
 };
 
-interface InteractionConnectorProps {
-  severity: VisualSeverity;
-}
-
-function InteractionConnector({ severity }: InteractionConnectorProps) {
+function InteractionConnector({ severity }) {
   const config = CONNECTOR_CONFIG[severity];
 
   return (
@@ -112,17 +92,11 @@ function InteractionConnector({ severity }: InteractionConnectorProps) {
   );
 }
 
-interface InteractionDiagramProps {
-  medicineA: string;
-  medicineB: string;
-  severity: VisualSeverity;
-}
-
 export function InteractionDiagram({
   medicineA,
   medicineB,
   severity,
-}: InteractionDiagramProps) {
+}) {
   return (
     <div
       className="animate-fade-in flex items-start justify-between gap-2 sm:gap-4"

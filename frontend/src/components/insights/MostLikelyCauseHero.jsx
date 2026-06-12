@@ -1,22 +1,13 @@
-"use client";
-
 import { InteractionDiagram } from "@/components/insights/InteractionDiagram";
 import { SymptomsPanel } from "@/components/insights/SymptomsPanel";
 import { SeverityBadge } from "@/components/insights/SeverityBadge";
 import { resolveMedicinePair } from "@/lib/resolveMedicinePair";
-import type { CauseInsight } from "@/lib/types";
-
-interface MostLikelyCauseHeroProps {
-  insight: CauseInsight;
-  allMedications: string[];
-  isAnalyzing?: boolean;
-}
 
 export function MostLikelyCauseHero({
   insight,
   allMedications,
   isAnalyzing = false,
-}: MostLikelyCauseHeroProps) {
+}) {
   const [medicineA, medicineB] = resolveMedicinePair(insight, allMedications);
 
   return (

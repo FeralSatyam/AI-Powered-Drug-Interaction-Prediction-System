@@ -1,19 +1,10 @@
-"use client";
-
 import { CauseInsightCard } from "@/components/insights/CauseInsightCard";
-import type { CauseInsight } from "@/lib/types";
-
-interface MostLikelyCauseVisualProps {
-  insights: CauseInsight[];
-  autoExpandPrimary?: boolean;
-  title?: string;
-}
 
 export function MostLikelyCauseVisual({
   insights,
   autoExpandPrimary = true,
   title = "Most Likely Cause",
-}: MostLikelyCauseVisualProps) {
+}) {
   if (insights.length === 0) {
     return (
       <section className="glass-card rounded-2xl border border-white/50 p-8 text-center shadow-lg">

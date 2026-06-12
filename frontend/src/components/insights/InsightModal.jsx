@@ -1,16 +1,5 @@
-"use client";
-
 import { MostLikelyCauseVisual } from "@/components/insights/MostLikelyCauseVisual";
-import type { PreviewAnalysis } from "@/lib/types";
 import { useEffect, useRef } from "react";
-
-interface InsightModalProps {
-  preview: PreviewAnalysis;
-  isOpen: boolean;
-  onClose: () => void;
-  medicationCount: number;
-  symptomCount: number;
-}
 
 export function InsightModal({
   preview,
@@ -18,13 +7,13 @@ export function InsightModal({
   onClose,
   medicationCount,
   symptomCount,
-}: InsightModalProps) {
-  const dialogRef = useRef<HTMLDivElement>(null);
+}) {
+  const dialogRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    function handleKey(e: KeyboardEvent) {
+    function handleKey(e) {
       if (e.key === "Escape") onClose();
     }
 

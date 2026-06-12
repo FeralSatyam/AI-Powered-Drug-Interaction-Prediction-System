@@ -1,16 +1,6 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
 
-type AnimationPhase = "idle" | "converging" | "reaction" | "revealed";
-
-interface MedicationPillProps {
-  name: string;
-  side: "left" | "right";
-  phase: AnimationPhase;
-}
-
-export function MedicationPill({ name, side, phase }: MedicationPillProps) {
+export function MedicationPill({ name, side, phase }) {
   const animate =
     phase === "converging" || phase === "reaction" || phase === "revealed";
   const convergeClass = animate
@@ -40,18 +30,13 @@ export function MedicationPill({ name, side, phase }: MedicationPillProps) {
   );
 }
 
-interface ReactionCoreProps {
-  active: boolean;
-  severity: "low" | "moderate" | "high";
-}
-
-const GLOW: Record<string, string> = {
+const GLOW = {
   low: "from-emerald-400/40 to-teal-300/20",
   moderate: "from-amber-400/50 to-orange-300/20",
   high: "from-red-400/50 to-rose-300/20",
 };
 
-export function ReactionCore({ active, severity }: ReactionCoreProps) {
+export function ReactionCore({ active, severity }) {
   if (!active) return null;
 
   return (
@@ -70,8 +55,8 @@ export function ReactionCore({ active, severity }: ReactionCoreProps) {
           key={i}
           className="absolute left-1/2 top-1/2 h-2 w-2 rounded-full bg-[var(--primary)] animate-particle"
           style={{
-            ["--particle-x" as string]: p.x,
-            ["--particle-y" as string]: p.y,
+            ["--particle-x"]: p.x,
+            ["--particle-y"]: p.y,
             animationDelay: `${p.delay}ms`,
           }}
         />
@@ -91,18 +76,13 @@ const PARTICLES = [
   { x: "6px", y: "48px", delay: 140 },
 ];
 
-interface ConnectionBeamProps {
-  visible: boolean;
-  severity: "low" | "moderate" | "high";
-}
-
-const BEAM_COLOR: Record<string, string> = {
+const BEAM_COLOR = {
   low: "#059669",
   moderate: "#d97706",
   high: "#dc2626",
 };
 
-export function ConnectionBeam({ visible, severity }: ConnectionBeamProps) {
+export function ConnectionBeam({ visible, severity }) {
   if (!visible) return null;
 
   return (
@@ -138,12 +118,7 @@ const EMERGING_SYMPTOMS = [
   { key: "Headache", emoji: "🤕", angle: 70, delay: 400 },
 ];
 
-interface EmergingSymptomsProps {
-  visible: boolean;
-  symptoms: string[];
-}
-
-export function EmergingSymptoms({ visible, symptoms }: EmergingSymptomsProps) {
+export function EmergingSymptoms({ visible, symptoms }) {
   const display = useMemo(() => {
     const normalized = symptoms.map((s) => s.toLowerCase());
     const matched = EMERGING_SYMPTOMS.filter((s) =>
@@ -170,8 +145,8 @@ export function EmergingSymptoms({ visible, symptoms }: EmergingSymptomsProps) {
             key={item.key}
             className="absolute left-1/2 top-full animate-symptom-emerge"
             style={{
-              ["--emerge-x" as string]: `${x}px`,
-              ["--emerge-y" as string]: `${y}px`,
+              ["--emerge-x"]: `${x}px`,
+              ["--emerge-y"]: `${y}px`,
               animationDelay: `${item.delay}ms`,
             }}
           >
@@ -188,8 +163,8 @@ export function EmergingSymptoms({ visible, symptoms }: EmergingSymptomsProps) {
   );
 }
 
-export function useReactionPhase(resetKey: string) {
-  const [phase, setPhase] = useState<AnimationPhase>("idle");
+export function useReactionPhase(resetKey) {
+  const [phase, setPhase] = useState("idle");
 
   useEffect(() => {
     setPhase("idle");
