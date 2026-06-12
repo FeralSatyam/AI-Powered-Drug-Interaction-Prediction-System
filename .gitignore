@@ -2,4 +2,8 @@
 *.pt
 *.pkl
 .venv
-data/
+/data/
+node_modules
+.env
+*.log
+npm-debug.log*
