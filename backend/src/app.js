@@ -3,6 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 
 const config = require('./config/env');
 const apiRoutes = require('./routes');
@@ -20,13 +21,14 @@ app.use(
       }
       return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
-    methods: ['GET', 'POST', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   })
 );
 
-// --- Body parsing + request logging ---
+// --- Body parsing, cookies, and request logging ---
 app.use(express.json({ limit: '1mb' }));
+app.use(cookieParser());
 app.use(morgan('dev'));
 
 // --- Routes ---
