@@ -1,20 +1,11 @@
-import type { DetectedInteraction, InteractionSeverity } from "@/lib/types";
-
-const SEVERITY_STYLES: Record<
-  InteractionSeverity,
-  { label: string; className: string }
-> = {
+const SEVERITY_STYLES = {
   low: { label: "Low", className: "bg-gray-100 text-gray-700" },
   moderate: { label: "Moderate", className: "bg-[var(--risk-moderate-bg)] text-[var(--risk-moderate)]" },
   high: { label: "High", className: "bg-[var(--risk-high-bg)] text-[var(--risk-high)]" },
   critical: { label: "Critical", className: "bg-red-100 text-[var(--risk-critical)]" },
 };
 
-interface InteractionListProps {
-  interactions: DetectedInteraction[];
-}
-
-export function InteractionList({ interactions }: InteractionListProps) {
+export function InteractionList({ interactions }) {
   return (
     <section className="rounded-xl border border-[var(--border)] bg-white p-6 shadow-sm" aria-labelledby="interactions-heading">
       <h2 id="interactions-heading" className="mb-5 text-lg font-semibold text-[var(--foreground)]">

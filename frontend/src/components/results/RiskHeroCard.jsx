@@ -1,9 +1,4 @@
-import type { RiskLevel } from "@/lib/types";
-
-const RISK_CONFIG: Record<
-  RiskLevel,
-  { label: string; border: string; bg: string; text: string; sublabel?: string }
-> = {
+const RISK_CONFIG = {
   low: {
     label: "Low Risk",
     border: "border-l-[var(--risk-low)]",
@@ -31,13 +26,7 @@ const RISK_CONFIG: Record<
   },
 };
 
-interface RiskHeroCardProps {
-  level: RiskLevel;
-  riskScore: number;
-  confidence: number;
-}
-
-export function RiskHeroCard({ level, riskScore, confidence }: RiskHeroCardProps) {
+export function RiskHeroCard({ level, riskScore, confidence }) {
   const config = RISK_CONFIG[level];
 
   return (

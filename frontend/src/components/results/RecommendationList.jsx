@@ -1,8 +1,4 @@
-interface RecommendationListProps {
-  recommendations: string[];
-}
-
-export function RecommendationList({ recommendations }: RecommendationListProps) {
+export function RecommendationList({ recommendations }) {
   if (recommendations.length === 0) return null;
 
   return (

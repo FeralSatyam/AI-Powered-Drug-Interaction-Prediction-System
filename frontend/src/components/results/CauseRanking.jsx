@@ -1,10 +1,4 @@
-import type { CauseRanking as CauseRankingType } from "@/lib/types";
-
-interface CauseRankingProps {
-  rankings: CauseRankingType[];
-}
-
-export function CauseRanking({ rankings }: CauseRankingProps) {
+export function CauseRanking({ rankings }) {
   if (rankings.length === 0) return null;
 
   return (
