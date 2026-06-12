@@ -31,6 +31,18 @@ const config = {
     timeout: toInt(process.env.ML_SERVICE_TIMEOUT, 30000),
   },
 
+  auth: {
+    // Signing secret for session tokens. The fallback keeps local dev working,
+    // but production must set a strong JWT_SECRET.
+    jwtSecret: process.env.JWT_SECRET || 'dev-insecure-secret-change-me',
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    cookieName: process.env.AUTH_COOKIE_NAME || 'mia_token',
+    // Only send the cookie over HTTPS when explicitly enabled (production).
+    cookieSecure: String(process.env.COOKIE_SECURE).toLowerCase() === 'true',
+    // Lifetime of the session cookie in milliseconds (kept in step with 7d).
+    cookieMaxAgeMs: toInt(process.env.AUTH_COOKIE_MAX_AGE_MS, 7 * 24 * 60 * 60 * 1000),
+  },
+
   db: {
     url: process.env.DATABASE_URL || '',
     host: process.env.PGHOST || 'localhost',
