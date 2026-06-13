@@ -128,12 +128,20 @@ export function mlResultToPreview(mlResult, medications) {
     });
   });
 
+  const SEVERITY_ORDER = { critical: 0, high: 1, moderate: 2, low: 3 };
+  const bySeverityDesc = (a, b) =>
+    (SEVERITY_ORDER[a.severity] ?? 3) - (SEVERITY_ORDER[b.severity] ?? 3) ||
+    b.likelihood - a.likelihood;
+
+  insights.sort(bySeverityDesc);
   insights.forEach((item, i) => { item.rank = i + 1; });
+
+  const sortedInteractions = [...interactions].sort(bySeverityDesc);
 
   const hasSignificantFindings =
     mlResult.harmful ||
-    interactions.some((i) => i.severity === "critical" || i.severity === "high") ||
+    sortedInteractions.some((i) => i.severity === "critical" || i.severity === "high") ||
     (insights[0]?.likelihood ?? 0) >= 40;
 
-  return { insights: insights.slice(0, 5), interactions, confidence, hasSignificantFindings };
+  return { insights: insights.slice(0, 5), interactions: sortedInteractions, confidence, hasSignificantFindings };
 }
