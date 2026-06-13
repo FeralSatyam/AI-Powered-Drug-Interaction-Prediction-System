@@ -8,8 +8,14 @@ import { PatientHistoryPanel } from "@/components/PatientHistoryPanel";
 import { ResultsPanel } from "@/components/results/ResultsPanel";
 import { usePatients } from "@/context/PatientContext";
 import { buildPreviewAnalysis, getPrimaryInsight } from "@/lib/analysis/insights";
+import { mlResultToPreview } from "@/lib/analysis/adapter";
+import { predictInteractions, fetchDrugCatalog } from "@/lib/api/analysis";
 import { resolveMedicinePair } from "@/lib/resolveMedicinePair";
 import { severityToRisk } from "@/lib/risk";
+
+// Module-level catalog cache — fetched once per session.
+let _catalogCache = null;
+let _catalogFetching = false;
 
 export function AnalyzerApp() {
   const {
@@ -25,6 +31,8 @@ export function AnalyzerApp() {
   // The committed analysis result — only set when Analyze is pressed.
   const [analysis, setAnalysis] = useState(null);
   const [previewKey, setPreviewKey] = useState(0);
+  const [analysisSource, setAnalysisSource] = useState(null); // 'ml' | 'fallback'
+  const [drugCatalog, setDrugCatalog] = useState(null);
   // Avoids re-recording history when re-analyzing the same medication set.
   const lastSavedSignature = useRef(null);
 
@@ -42,43 +50,74 @@ export function AnalyzerApp() {
 
   const isReportReady = !!analysis && !isAnalyzing;
 
+  // Fetch drug catalog once on mount (best-effort; failure is silent).
+  useEffect(() => {
+    if (_catalogCache || _catalogFetching) {
+      if (_catalogCache) setDrugCatalog(_catalogCache);
+      return;
+    }
+    _catalogFetching = true;
+    fetchDrugCatalog()
+      .then((catalog) => {
+        _catalogCache = catalog;
+        setDrugCatalog(catalog);
+      })
+      .catch(() => {})
+      .finally(() => { _catalogFetching = false; });
+  }, []);
+
   // Clear stale results whenever the medication set or patient changes, so the
   // doctor always re-runs Analyze against the current list.
   useEffect(() => {
     setAnalysis(null);
     setIsAnalyzing(false);
+    setAnalysisSource(null);
   }, [signature, currentPatientId]);
 
-  const runAnalysis = useCallback(() => {
+  const runAnalysis = useCallback(async () => {
     if (medications.length < 2 || isAnalyzing) return;
 
     setIsAnalyzing(true);
-    // Brief pause so the analyzing state is visible; this is also the single
-    // place a real /api/predict call would be issued.
     const snapshot = [...medications];
-    setTimeout(() => {
-      const preview = buildPreviewAnalysis(snapshot);
-      const primaryInsight = getPrimaryInsight(preview, snapshot);
-      setAnalysis({ preview, primaryInsight, medications: snapshot });
-      setPreviewKey((k) => k + 1);
-      setIsAnalyzing(false);
 
-      // Record the run once per distinct medication set (server call).
-      const sig = [...snapshot].sort().join("|");
-      if (primaryInsight && sig !== lastSavedSignature.current) {
-        lastSavedSignature.current = sig;
-        saveAnalysis({
-          medications: snapshot,
-          riskLevel: severityToRisk(primaryInsight.severity),
-          result: {
-            headline: primaryInsight.headline,
-            severity: primaryInsight.severity,
-            likelihood: primaryInsight.likelihood,
-            symptoms: primaryInsight.symptoms,
-          },
-        });
-      }
-    }, 600);
+    let preview;
+    let source;
+
+    try {
+      const mlResult = await predictInteractions(snapshot);
+      preview = mlResultToPreview(mlResult, snapshot);
+      source  = "ml";
+    } catch {
+      preview = buildPreviewAnalysis(snapshot);
+      source  = "fallback";
+      toast.warning("Offline estimate — ML service unavailable", {
+        id:       "ml-fallback",
+        duration: 5000,
+      });
+    }
+
+    const primaryInsight = getPrimaryInsight(preview, snapshot);
+    setAnalysis({ preview, primaryInsight, medications: snapshot, source });
+    setAnalysisSource(source);
+    setPreviewKey((k) => k + 1);
+    setIsAnalyzing(false);
+
+    // Record the run once per distinct medication set.
+    const sig = [...snapshot].sort().join("|");
+    if (primaryInsight && sig !== lastSavedSignature.current) {
+      lastSavedSignature.current = sig;
+      saveAnalysis({
+        medications: snapshot,
+        riskLevel: severityToRisk(primaryInsight.severity),
+        result: {
+          headline:   primaryInsight.headline,
+          severity:   primaryInsight.severity,
+          likelihood: primaryInsight.likelihood,
+          symptoms:   primaryInsight.symptoms,
+          source,
+        },
+      });
+    }
   }, [medications, isAnalyzing, saveAnalysis]);
 
   const addMedication = useCallback(
@@ -128,6 +167,7 @@ export function AnalyzerApp() {
               onRemove={removeMedication}
               onAnalyze={runAnalysis}
               isAnalyzing={isAnalyzing}
+              drugCatalog={drugCatalog}
             />
 
             {isAnalyzing && (
