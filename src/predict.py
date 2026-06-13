@@ -64,6 +64,12 @@ class DrugInteractionPredictor:
         self.drug_to_idx = _load_json(_MAP / "drug_to_idx.json")
         self.num_drugs   = len(self.drug_to_idx)
 
+        # Common drug name → STITCH ID lookup (case-insensitive, built via PubChem)
+        _name_map_path = _MAP / "drug_name_to_stitch.json"
+        self._name_to_stitch: dict[str, str] = (
+            _load_json(_name_map_path) if _name_map_path.exists() else {}
+        )
+
         se_to_idx  = _load_json(_MAP / "se_to_idx.json")
         se_to_name = _load_json(_MAP / "se_to_name.json")
         self.num_se = len(se_to_idx)
@@ -108,14 +114,28 @@ class DrugInteractionPredictor:
         with torch.no_grad():
             self._z = self.model.encode(self.drug_feat_t, self.edge_index_t, self.num_drugs)
 
+    def _resolve(self, name: str) -> str:
+        """Return the canonical STITCH ID for a drug name or STITCH ID."""
+        upper = name.strip().upper()
+        if upper in self.drug_to_idx:
+            return upper
+        stitch = self._name_to_stitch.get(name.strip().lower())
+        if stitch and stitch in self.drug_to_idx:
+            return stitch
+        raise ValueError(f"Unknown drug: {name!r}")
+
     def get_available_drugs(self) -> list:
         return sorted(self.drug_to_idx.keys())
 
     def predict(self, drug_names: list) -> dict:
-        normalized = [str(d).strip().upper() for d in drug_names]
-        missing    = [d for d in normalized if d not in self.drug_to_idx]
+        try:
+            resolved = [self._resolve(d) for d in drug_names]
+        except ValueError as e:
+            raise ValueError(str(e))
+        missing = [d for d in resolved if d not in self.drug_to_idx]
         if missing:
             raise ValueError(f"Unknown drug(s): {', '.join(missing)}")
+        normalized = resolved
 
         pairs      = list(itertools.combinations(normalized, 2))
         pair_t     = torch.tensor(
@@ -151,14 +171,20 @@ class DrugInteractionPredictor:
             for i in top_idxs
         ]
 
+        # Map STITCH IDs back to the display names the caller used
+        stitch_to_display = {
+            self._resolve(d): str(d).strip()
+            for d in drug_names
+        }
+
         pair_details = []
         for p_idx, (a, b) in enumerate(pairs):
             p_probs  = se_probs_np[p_idx]
             top_p    = np.argsort(-p_probs)[:_TOP_PAIR_SE_LIMIT]
             top_p    = top_p[p_probs[top_p] > _SE_PROB_THRESHOLD]
             pair_details.append({
-                "drug_a":           a,
-                "drug_b":           b,
+                "drug_a":           stitch_to_display.get(a, a),
+                "drug_b":           stitch_to_display.get(b, b),
                 "top_side_effects": [self.idx_to_name.get(int(i), f"SE_{i}") for i in top_p],
                 "pair_harm_score":  round(float(harm_scores[p_idx]), 4),
             })
