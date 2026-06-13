@@ -10,6 +10,7 @@ export function MedicationSection({
   medications,
   onAdd,
   onRemove,
+  onClear,
   onAnalyze,
   isAnalyzing = false,
   disabled = false,
@@ -68,7 +69,16 @@ export function MedicationSection({
 
       {medications.length > 0 && (
         <div className="mt-5">
-          <p className="mb-2.5 text-sm font-medium text-[var(--muted)]">Selected</p>
+          <div className="mb-2.5 flex items-center justify-between">
+            <p className="text-sm font-medium text-[var(--muted)]">Selected</p>
+            <button
+              type="button"
+              onClick={onClear}
+              className="text-xs text-[var(--muted)] underline-offset-2 hover:text-red-500 hover:underline"
+            >
+              Clear all
+            </button>
+          </div>
           <div className="flex flex-wrap gap-2">
             {medications.map((med) => (
               <Chip key={med} label={med} onRemove={() => onRemove(med)} />

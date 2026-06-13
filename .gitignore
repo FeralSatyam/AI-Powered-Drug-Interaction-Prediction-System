@@ -1,8 +1,4 @@
 # Python / ML
-*.npy
-*.npz
-*.pt
-*.pkl
 .venv
 data/
 !frontend/src/lib/data/

@@ -21,7 +21,7 @@ export function Brand({ size = "md", className }) {
       </div>
       <div className="min-w-0">
         <p className={cn("truncate font-semibold tracking-tight text-[var(--foreground)]", title)}>
-          Medication Interaction Analyzer
+          AI-Powered Drug Interaction Prediction System
         </p>
         <p className="truncate text-[11px] text-[var(--muted)]">
           Clinical decision support

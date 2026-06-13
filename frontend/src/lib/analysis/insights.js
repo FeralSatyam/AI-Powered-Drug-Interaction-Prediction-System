@@ -226,11 +226,17 @@ export function buildPreviewAnalysis(medications, symptoms = []) {
     result.interactions.length > 0 ||
     (insights[0]?.likelihood ?? 0) >= 40;
 
+  // Collect all unique symptoms from insights as the fallback side-effects list.
+  const sideEffects = [...new Set(insights.flatMap((i) => i.symptoms ?? []))].map(
+    (name) => ({ name, probability: 0 })
+  );
+
   return {
     insights: insights.slice(0, 5),
     interactions: result.interactions,
     confidence: result.confidence,
     hasSignificantFindings,
+    sideEffects,
   };
 }
 

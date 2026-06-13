@@ -2,7 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScanSearch, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
+import { DemoPanel } from "@/components/DemoPanel";
 import { Header } from "@/components/Header";
+import { SideEffectsPanel } from "@/components/SideEffectsPanel";
 import { MedicationSection } from "@/components/MedicationSection";
 import { PatientHistoryPanel } from "@/components/PatientHistoryPanel";
 import { ResultsPanel } from "@/components/results/ResultsPanel";
@@ -49,6 +51,7 @@ export function AnalyzerApp() {
   }, [analysis]);
 
   const isReportReady = !!analysis && !isAnalyzing;
+  const sideEffects = analysis?.preview?.sideEffects ?? [];
 
   // Fetch drug catalog once on mount (best-effort; failure is silent).
   useEffect(() => {
@@ -143,10 +146,28 @@ export function AnalyzerApp() {
     [medications, setMedications, persistMedications]
   );
 
+  const clearMedications = useCallback(() => {
+    setMedications([]);
+    persistMedications([]);
+  }, [setMedications, persistMedications]);
+
+  const loadDemoMedications = useCallback(
+    (names) => {
+      if (!currentPatientId) {
+        toast.error("Select or add a patient first");
+        return;
+      }
+      const next = [...new Set([...medications, ...names])];
+      setMedications(next);
+      persistMedications(next);
+    },
+    [medications, currentPatientId, setMedications, persistMedications]
+  );
+
   return (
     <>
       <Header reportData={reportData} isReportReady={isReportReady} />
-      <main className="mx-auto max-w-3xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
+      <main className="mx-auto max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         {!currentPatient ? (
           <div className="rounded-xl border border-dashed border-[var(--border)] bg-white px-6 py-16 text-center">
             <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-dashed border-[var(--border)]">
@@ -160,47 +181,61 @@ export function AnalyzerApp() {
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
-            <MedicationSection
-              medications={medications}
-              onAdd={addMedication}
-              onRemove={removeMedication}
-              onAnalyze={runAnalysis}
-              isAnalyzing={isAnalyzing}
-              drugCatalog={drugCatalog}
-            />
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+            {/* ── Left: demo panel ── */}
+            <div className="shrink-0 lg:w-56">
+              <DemoPanel onLoad={loadDemoMedications} currentMeds={medications} />
+            </div>
 
-            {isAnalyzing && (
-              <ResultsPanel medications={medications} preview={null} isAnalyzing />
-            )}
-
-            {!isAnalyzing && analysis && (
-              <ResultsPanel
-                key={previewKey}
-                medications={analysis.medications}
-                preview={analysis.preview}
-                isAnalyzing={false}
+            {/* ── Right: analyzer ── */}
+            <div className="min-w-0 flex-1 space-y-6">
+              <MedicationSection
+                medications={medications}
+                onAdd={addMedication}
+                onRemove={removeMedication}
+                onClear={clearMedications}
+                onAnalyze={runAnalysis}
+                isAnalyzing={isAnalyzing}
+                drugCatalog={drugCatalog}
               />
-            )}
 
-            {!isAnalyzing && !analysis && (
-              <div className="rounded-xl border border-dashed border-[var(--border)] bg-white px-6 py-12 text-center">
-                {medications.length < 2 ? (
-                  <p className="text-sm font-medium text-[var(--muted)]">
-                    Add at least 2 medications to see how their combination may
-                    affect {currentPatient.name.split(" ")[0]}
-                  </p>
-                ) : (
-                  <p className="flex items-center justify-center gap-2 text-sm font-medium text-[var(--muted)]">
-                    <ScanSearch className="size-4" />
-                    Press Analyze to check interactions for{" "}
-                    {currentPatient.name.split(" ")[0]}
-                  </p>
-                )}
-              </div>
-            )}
+              {isAnalyzing && (
+                <ResultsPanel medications={medications} preview={null} isAnalyzing />
+              )}
 
-            <PatientHistoryPanel />
+              {!isAnalyzing && analysis && (
+                <ResultsPanel
+                  key={previewKey}
+                  medications={analysis.medications}
+                  preview={analysis.preview}
+                  isAnalyzing={false}
+                />
+              )}
+
+              {!isAnalyzing && !analysis && (
+                <div className="rounded-xl border border-dashed border-[var(--border)] bg-white px-6 py-12 text-center">
+                  {medications.length < 2 ? (
+                    <p className="text-sm font-medium text-[var(--muted)]">
+                      Add at least 2 medications to see how their combination may
+                      affect {currentPatient.name.split(" ")[0]}
+                    </p>
+                  ) : (
+                    <p className="flex items-center justify-center gap-2 text-sm font-medium text-[var(--muted)]">
+                      <ScanSearch className="size-4" />
+                      Press Analyze to check interactions for{" "}
+                      {currentPatient.name.split(" ")[0]}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <PatientHistoryPanel />
+            </div>
+
+            {/* ── Right: side effects ── */}
+            <div className="shrink-0 lg:w-52">
+              <SideEffectsPanel sideEffects={sideEffects} />
+            </div>
           </div>
         )}
       </main>

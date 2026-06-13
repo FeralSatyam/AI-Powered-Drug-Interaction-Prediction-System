@@ -136,5 +136,17 @@ export function mlResultToPreview(mlResult, medications) {
     sortedInteractions.some((i) => i.severity === "critical" || i.severity === "high") ||
     (insights[0]?.likelihood ?? 0) >= 40;
 
-  return { insights: insights.slice(0, 5), interactions: sortedInteractions, confidence, hasSignificantFindings };
+  return {
+    insights: insights.slice(0, 5),
+    interactions: sortedInteractions,
+    confidence,
+    hasSignificantFindings,
+    sideEffects: (mlResult.side_effects ?? [])
+      .map((se) => ({
+        name:        se.name ?? String(se),
+        probability: typeof se.probability === "number" ? se.probability : 0,
+      }))
+      .filter((se) => se.name)
+      .sort((a, b) => b.probability - a.probability),
+  };
 }
