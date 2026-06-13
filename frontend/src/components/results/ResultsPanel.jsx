@@ -69,6 +69,12 @@ export function ResultsPanel({ medications, preview, isAnalyzing }) {
 
   return (
     <div className="space-y-5">
+      {/* Relationship map — shown first, directly under the medications card */}
+      <InteractionNetworkCard
+        medications={medications}
+        interactions={preview.interactions}
+      />
+
       {/* Overall verdict */}
       <section className="rounded-xl border border-[var(--border)] bg-white p-5 shadow-sm sm:p-6">
         <div className={cn("flex items-center gap-3 rounded-lg border p-3.5", cfg.wrap)}>
@@ -136,12 +142,6 @@ export function ResultsPanel({ medications, preview, isAnalyzing }) {
           </p>
         )}
       </section>
-
-      {/* Relationship map */}
-      <InteractionNetworkCard
-        medications={medications}
-        interactions={preview.interactions}
-      />
     </div>
   );
 }

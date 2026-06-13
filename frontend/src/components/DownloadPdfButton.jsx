@@ -91,16 +91,6 @@ export function DownloadPdfButton({
           </span>
         </>
       )}
-
-      {isReady && state === "idle" && (
-        <span
-          className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-white ring-2 ring-[var(--cta-ready-bg)]"
-          aria-hidden
-        >
-          <span className="absolute inset-0 animate-ping rounded-full bg-emerald-300 opacity-75" />
-          <span className="absolute inset-0 rounded-full bg-emerald-400" />
-        </span>
-      )}
     </button>
   );
 }
