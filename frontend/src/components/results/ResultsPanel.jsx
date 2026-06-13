@@ -34,11 +34,6 @@ const SEVERITY = {
   low: { dot: "bg-emerald-500", badge: "bg-emerald-50 text-emerald-700", label: "Minor" },
 };
 
-const RECOMMENDATION = {
-  high: "Avoid concurrent use unless the benefit clearly outweighs the risk. Monitor closely and order relevant labs.",
-  moderate: "Monitor the patient and review dose, timing, and relevant labs at the next follow-up.",
-  low: "No specific action needed at standard doses; document and reassess if symptoms emerge.",
-};
 
 function overallFromInteractions(interactions) {
   let level = "safe";
@@ -126,12 +121,6 @@ export function ResultsPanel({ medications, preview, isAnalyzing }) {
                       ))}
                     </div>
                   )}
-                  <p className="mt-2.5 rounded-md bg-gray-50 px-3 py-2 text-xs text-[var(--muted)]">
-                    <span className="font-medium text-[var(--foreground)]">
-                      Recommendation:
-                    </span>{" "}
-                    {RECOMMENDATION[ix.severity] ?? RECOMMENDATION.low}
-                  </p>
                 </li>
               );
             })}

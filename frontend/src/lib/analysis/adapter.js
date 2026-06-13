@@ -47,15 +47,13 @@ function buildHeadline(drugA, drugB, symptoms) {
 }
 
 function buildExplanation(drugA, drugB, severity, symptoms) {
-  const sevText =
-    severity === "critical" || severity === "high" ? "high-priority" : "moderate";
+  const sevText = { critical: "critical", high: "high", moderate: "moderate", low: "low" }[severity] ?? "low";
   const symptomText =
     symptoms.length > 0 ? symptoms.join(", ").toLowerCase() : "adverse effects";
   return (
-    `The ML model detected a ${sevText} pharmacodynamic interaction between ` +
+    `The ML model detected a ${sevText} interaction between ` +
     `${drugA} and ${drugB} based on shared protein-pathway topology. ` +
-    `Associated side effects include ${symptomText}. ` +
-    `Confidence reflects the model's harm score (0-1) mapped to this severity tier.`
+    `Top associated side effects: ${symptomText}.`
   );
 }
 
@@ -102,54 +100,33 @@ export function mlResultToPreview(mlResult, medications) {
   // Build insights[] — one per pair, plus top global side effects as extras
   const insights = [];
 
+  // One insight per drug pair only — no global SE fill to avoid duplicate combo labels.
   pairs.forEach(([drugA, drugB], idx) => {
     if (insights.length >= 5) return;
     const detail   = mlResult.pair_details[idx] ?? {};
     const score    = typeof detail.pair_harm_score === "number" ? detail.pair_harm_score : mlResult.confidence;
-    const symptoms = Array.isArray(detail.top_side_effects) ? detail.top_side_effects : [];
+    // Top 3 highest-probability symptoms for this specific pair
+    const symptoms = (Array.isArray(detail.top_side_effects) ? detail.top_side_effects : []).slice(0, 3);
     const hasCritical = mlResult.side_effects.some(
       (se) => symptoms.includes(se.name) && se.severity === "CRITICAL"
     );
-    const severity = harmScoreToSeverity(score, hasCritical);
+    const severity   = harmScoreToSeverity(score, hasCritical);
     const likelihood = Math.round(score * 100);
 
     insights.push({
-      id:               `ml-pair-${idx}`,
-      rank:             idx + 1,
-      type:             "interaction",
-      medications:      [drugA, drugB],
-      headline:         buildHeadline(drugA, drugB, symptoms),
+      id:                  `ml-pair-${idx}`,
+      rank:                idx + 1,
+      type:                "interaction",
+      medications:         [drugA, drugB],
+      headline:            buildHeadline(drugA, drugB, symptoms),
       symptoms,
       severity,
       likelihood,
       confidence,
-      shortExplanation: `ML model flagged this pair with harm score ${score.toFixed(2)}.`,
+      shortExplanation:    `Harm score: ${score.toFixed(2)}`,
       detailedExplanation: buildExplanation(drugA, drugB, severity, symptoms),
     });
   });
-
-  // Fill remaining slots (up to 5) with the top global side effects not yet covered
-  const coveredSymptoms = new Set(insights.flatMap((i) => i.symptoms));
-  for (const se of mlResult.side_effects) {
-    if (insights.length >= 5) break;
-    if (coveredSymptoms.has(se.name)) continue;
-    insights.push({
-      id:               `ml-se-${se.name.replace(/\s+/g, "-").toLowerCase()}`,
-      rank:             insights.length + 1,
-      type:             "side_effect",
-      medications,
-      headline:         `${medications.join(" + ")} associated with ${se.name.toLowerCase()}`,
-      symptoms:         [se.name],
-      severity:         mlSeverityToUi(se.severity),
-      likelihood:       Math.round(se.probability * 100),
-      confidence,
-      shortExplanation: `Side effect detected with probability ${(se.probability * 100).toFixed(0)}%.`,
-      detailedExplanation:
-        `The model predicted ${se.name} with ${(se.probability * 100).toFixed(0)}% probability ` +
-        `for this drug combination. Category: ${se.category || "Unknown"}.`,
-    });
-    coveredSymptoms.add(se.name);
-  }
 
   insights.forEach((item, i) => { item.rank = i + 1; });
 
