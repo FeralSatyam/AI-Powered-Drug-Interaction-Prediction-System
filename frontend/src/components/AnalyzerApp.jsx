@@ -3,9 +3,9 @@ import { UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 import { Header } from "@/components/Header";
-import { MostLikelyCauseHero } from "@/components/insights/MostLikelyCauseHero";
 import { MedicationSection } from "@/components/MedicationSection";
 import { PatientHistoryPanel } from "@/components/PatientHistoryPanel";
+import { ResultsPanel } from "@/components/results/ResultsPanel";
 import { usePatients } from "@/context/PatientContext";
 import { buildPreviewAnalysis, getPrimaryInsight } from "@/lib/analysis/insights";
 import { resolveMedicinePair } from "@/lib/resolveMedicinePair";
@@ -131,10 +131,10 @@ export function AnalyzerApp() {
             )}
 
             {medications.length >= 2 && primaryInsight && (
-              <MostLikelyCauseHero
+              <ResultsPanel
                 key={previewKey}
-                insight={primaryInsight}
-                allMedications={medications}
+                medications={medications}
+                preview={preview}
                 isAnalyzing={isAnalyzing}
               />
             )}
