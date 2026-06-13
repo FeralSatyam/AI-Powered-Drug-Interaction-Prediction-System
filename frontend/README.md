@@ -1,17 +1,37 @@
 # Medication Interaction Analyzer — Frontend
 
-A client-side React application (Vite) that surfaces possible adverse reactions and
-drug-interaction risks for clinical decision support. All analysis runs in the
-browser; there is no server-side rendering.
+A React application (Vite) that surfaces possible adverse reactions and
+drug-interaction risks for clinical decision support. Doctors sign in, manage
+their patients, and analyze each patient's medication list — visualized as a
+radial interaction network. The interaction analysis runs in the browser; auth
+and patient data are persisted via the Node/Express backend.
 
 ## Tech Stack
 
 - **React 19** (client-side rendering only)
 - **Vite** — dev server and build tool
-- **React Router DOM** — declarative client-side routing
+- **React Router DOM** — declarative client-side routing + protected routes
 - **Tailwind CSS v4** — styling (via `@tailwindcss/vite`)
+- **shadcn/ui** — UI primitives (new-york) on Radix + lucide icons
+- **sonner** — toast notifications
 - **JavaScript (JSX)** — no TypeScript
 - **jsPDF** — client-side PDF report generation
+
+## Features
+
+- **Doctor auth** — register / sign in with a JWT session cookie; the session is
+  restored on load, so you stay signed in until you log out.
+- **Patient management** — add, select, and remove patients; each patient keeps
+  their own medication list and analysis history.
+- **Interaction network** — selected medications are drawn as nodes with the most
+  severe interacting pair anchored at the center and color-coded edges.
+
+## Backend connection
+
+API calls go to a same-origin `/api` path that the Vite dev server proxies to the
+backend (default `http://localhost:5000`). Start the backend first, then the
+frontend. Override the proxy target with `VITE_PROXY_TARGET`, or point at an
+absolute API with `VITE_API_URL` (see `.env.example`).
 
 ## Getting Started
 
