@@ -1,71 +1,105 @@
+import { ShieldAlert, ShieldCheck, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { titleCase } from "@/lib/text";
+import { computePolypharmacyRisk } from "@/lib/polypharmacyScore";
 
-// Color by probability: high → red, mid → amber, low → green
-function chipStyle(prob) {
-  if (prob >= 0.65) return "bg-red-50 text-red-700 border border-red-200";
-  if (prob >= 0.35) return "bg-amber-50 text-amber-700 border border-amber-200";
-  return "bg-emerald-50 text-emerald-700 border border-emerald-200";
-}
+const ICON_MAP = {
+  HIGH:     ShieldAlert,
+  MODERATE: AlertTriangle,
+  LOW:      ShieldCheck,
+};
 
-export function SideEffectsPanel({ sideEffects = [] }) {
-  // Already sorted high→low by the adapter; guard in case fallback isn't.
-  const sorted = [...sideEffects].sort((a, b) => b.probability - a.probability).slice(0, 10);
+export function SideEffectsPanel({ interactions = [], confidence = 0 }) {
+  const hasData = interactions.length > 0;
 
   return (
     <aside className="rounded-xl border border-[var(--border)] bg-white shadow-sm">
       <div className="border-b border-[var(--border)] px-4 py-3.5">
-        <p className="text-sm font-semibold text-[var(--foreground)]">Possible side effects</p>
+        <p className="text-sm font-semibold text-[var(--foreground)]">
+          Polypharmacy Risk Score
+        </p>
         <p className="mt-0.5 text-xs text-[var(--muted)]">
-          {sorted.length > 0
-            ? `Top ${sorted.length} by confidence`
+          {hasData
+            ? "Overall prescription safety assessment"
             : "Run analysis to see results"}
         </p>
       </div>
 
-      <div className="px-4 py-3.5">
-        {sorted.length === 0 ? (
+      <div className="px-4 py-4">
+        {!hasData ? (
           <p className="py-6 text-center text-xs text-[var(--muted)]">
-            No data yet — analyze a medication combination first.
+            No data yet - analyse a medication combination first.
           </p>
         ) : (
-          <>
-            <div className="flex flex-wrap gap-1.5">
-              {sorted.map((effect) => (
-                <span
-                  key={effect.name}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium",
-                    chipStyle(effect.probability)
-                  )}
-                >
-                  {titleCase(effect.name)}
-                  <span className="opacity-70">
-                    {Math.round(effect.probability * 100)}%
-                  </span>
-                </span>
-              ))}
-            </div>
-            <div className="mt-3.5 border-t border-[var(--border)] pt-3">
-              <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-[var(--muted)]">
-                Confidence score
-              </p>
-              <div className="flex gap-3">
-              {[
-                { cls: "bg-red-400",     label: "High" },
-                { cls: "bg-amber-400",   label: "Mid" },
-                { cls: "bg-emerald-400", label: "Low" },
-              ].map(({ cls, label }) => (
-                <span key={label} className="flex items-center gap-1.5 text-[11px] text-[var(--muted)]">
-                  <span className={cn("size-2 rounded-full", cls)} />
-                  {label}
-                </span>
-              ))}
-              </div>
-            </div>
-          </>
+          <RiskVerdictCard interactions={interactions} confidence={confidence} />
         )}
       </div>
     </aside>
   );
 }
+
+function RiskVerdictCard({ interactions, confidence }) {
+  const risk = computePolypharmacyRisk(interactions, confidence);
+  const Icon = ICON_MAP[risk.grade];
+  const barPct = Math.round(risk.score * 100);
+
+  return (
+    <div className="flex flex-col gap-4">
+
+      {/* Grade badge */}
+      <div className={cn("rounded-xl border-2 p-4 text-center", risk.borderClass, risk.bgClass)}>
+        <Icon className="mx-auto mb-1.5 size-7" style={{ color: risk.color }} />
+        <p className="text-2xl font-black tracking-widest" style={{ color: risk.color }}>
+          {risk.grade}
+        </p>
+        <p className={cn("text-xs font-medium mt-0.5", risk.textClass)}>
+          {risk.label}
+        </p>
+      </div>
+
+      {/* Risk index bar */}
+      <div>
+        <div className="flex justify-between text-[11px] text-[var(--muted)] mb-1">
+          <span>Risk index</span>
+          <span>{barPct}%</span>
+        </div>
+        <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${barPct}%`, backgroundColor: risk.color }}
+          />
+        </div>
+      </div>
+
+      {/* Summary */}
+      <p className="rounded-lg border border-[var(--border)] bg-gray-50 px-3 py-2.5 text-xs leading-relaxed text-[var(--foreground)]">
+        {risk.summary}
+      </p>
+
+      {/* Severity breakdown */}
+      <div className="flex justify-around border-t border-[var(--border)] pt-3">
+        {[
+          { num: risk.highCount,     label: "High",     color: "#dc2626" },
+          { num: risk.moderateCount, label: "Moderate", color: "#d97706" },
+          { num: risk.lowCount,      label: "Low",      color: "#16a34a" },
+        ].map(({ num, label, color }) => (
+          <div key={label} className="flex flex-col items-center gap-0.5">
+            <span className="text-xl font-bold" style={{ color }}>
+              {num}
+            </span>
+            <span className="text-[10px] text-[var(--muted)]">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Confidence footer */}
+      <p className="text-center text-[11px] text-[var(--muted)]">
+        Model confidence: <span className="font-medium text-[var(--foreground)]">{confidence}%</span>
+        {" "}· {risk.totalPairs} pair{risk.totalPairs !== 1 ? "s" : ""} checked
+      </p>
+
+    </div>
+  );
+}
+
+// Keep this export - used by insights components
+export { severityToRisk } from "@/lib/risk";

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import { DemoPanel } from "@/components/DemoPanel";
 import { Header } from "@/components/Header";
+import { MedicalChatbot } from "@/components/MedicalChatbot";
 import { SideEffectsPanel } from "@/components/SideEffectsPanel";
 import { MedicationSection } from "@/components/MedicationSection";
 import { PatientHistoryPanel } from "@/components/PatientHistoryPanel";
@@ -15,7 +16,7 @@ import { predictInteractions, fetchDrugCatalog } from "@/lib/api/analysis";
 import { resolveMedicinePair } from "@/lib/resolveMedicinePair";
 import { severityToRisk } from "@/lib/risk";
 
-// Module-level catalog cache — fetched once per session.
+// Module-level catalog cache - fetched once per session.
 let _catalogCache = null;
 let _catalogFetching = false;
 
@@ -30,7 +31,7 @@ export function AnalyzerApp() {
   } = usePatients();
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  // The committed analysis result — only set when Analyze is pressed.
+  // The committed analysis result - only set when Analyze is pressed.
   const [analysis, setAnalysis] = useState(null);
   const [previewKey, setPreviewKey] = useState(0);
   const [analysisSource, setAnalysisSource] = useState(null); // 'ml' | 'fallback'
@@ -51,7 +52,8 @@ export function AnalyzerApp() {
   }, [analysis]);
 
   const isReportReady = !!analysis && !isAnalyzing;
-  const sideEffects = analysis?.preview?.sideEffects ?? [];
+  const interactions = analysis?.preview?.interactions ?? [];
+  const confidence   = analysis?.preview?.confidence ?? 0;
 
   // Fetch drug catalog once on mount (best-effort; failure is silent).
   useEffect(() => {
@@ -93,7 +95,7 @@ export function AnalyzerApp() {
     } catch {
       preview = buildPreviewAnalysis(snapshot);
       source  = "fallback";
-      toast.warning("Offline estimate — ML service unavailable", {
+      toast.warning("Offline estimate - ML service unavailable", {
         id:       "ml-fallback",
         duration: 5000,
       });
@@ -157,17 +159,16 @@ export function AnalyzerApp() {
         toast.error("Select or add a patient first");
         return;
       }
-      const next = [...new Set([...medications, ...names])];
-      setMedications(next);
-      persistMedications(next);
+      setMedications(names);
+      persistMedications(names);
     },
-    [medications, currentPatientId, setMedications, persistMedications]
+    [currentPatientId, setMedications, persistMedications]
   );
 
   return (
     <>
       <Header reportData={reportData} isReportReady={isReportReady} />
-      <main className="mx-auto max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
+      <main className="mx-auto max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         {!currentPatient ? (
           <div className="rounded-xl border border-dashed border-[var(--border)] bg-white px-6 py-16 text-center">
             <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-dashed border-[var(--border)]">
@@ -181,14 +182,14 @@ export function AnalyzerApp() {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+          <div className="grid gap-5 lg:grid-cols-[300px_1fr_280px]">
             {/* ── Left: demo panel ── */}
-            <div className="shrink-0 lg:w-56">
+            <div>
               <DemoPanel onLoad={loadDemoMedications} currentMeds={medications} />
             </div>
 
-            {/* ── Right: analyzer ── */}
-            <div className="min-w-0 flex-1 space-y-6">
+            {/* ── Center: analyzer ── */}
+            <div className="min-w-0 space-y-5">
               <MedicationSection
                 medications={medications}
                 onAdd={addMedication}
@@ -232,13 +233,14 @@ export function AnalyzerApp() {
               <PatientHistoryPanel />
             </div>
 
-            {/* ── Right: side effects ── */}
-            <div className="shrink-0 lg:w-52">
-              <SideEffectsPanel sideEffects={sideEffects} />
+            {/* ── Right: polypharmacy risk score ── */}
+            <div>
+              <SideEffectsPanel interactions={interactions} confidence={confidence} />
             </div>
           </div>
         )}
       </main>
+      <MedicalChatbot />
     </>
   );
 }

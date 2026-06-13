@@ -46,14 +46,25 @@ function buildHeadline(drugA, drugB, symptoms) {
   return `${drugA} + ${drugB} may be causing ${symptomText}`;
 }
 
-function buildExplanation(drugA, drugB, severity, symptoms) {
-  const sevText = { critical: "critical", high: "high", moderate: "moderate", low: "low" }[severity] ?? "low";
-  const symptomText =
-    symptoms.length > 0 ? symptoms.join(", ").toLowerCase() : "adverse effects";
+function buildExplanation(drugA, drugB, severity) {
+  if (severity === "critical" || severity === "high") {
+    return (
+      `- ${drugA} and ${drugB} share overlapping pharmacological targets, producing a significant additive or synergistic effect.\n` +
+      `- Co-administration may lead to serious adverse events such as increased bleeding risk, cardiovascular instability, or systemic toxicity.\n` +
+      `- Avoid concurrent use unless clinically necessary; monitor vital signs, relevant lab values, and symptoms closely.`
+    );
+  }
+  if (severity === "moderate") {
+    return (
+      `- ${drugA} and ${drugB} interact via shared metabolic enzymes or receptor pathways, altering the exposure or efficacy of one or both agents.\n` +
+      `- The patient may experience heightened side effects or a reduced therapeutic response from one or both drugs.\n` +
+      `- Monitor clinically for signs of toxicity or treatment failure; dose adjustment may be warranted.`
+    );
+  }
   return (
-    `The ML model detected a ${sevText} interaction between ` +
-    `${drugA} and ${drugB} based on shared protein-pathway topology. ` +
-    `Top associated side effects: ${symptomText}.`
+    `- ${drugA} and ${drugB} have limited pharmacokinetic or pharmacodynamic overlap at standard therapeutic doses.\n` +
+    `- The risk of a clinically significant adverse interaction is low under normal conditions.\n` +
+    `- Routine monitoring applies; no specific precautions beyond standard clinical care are necessary.`
   );
 }
 
@@ -89,10 +100,10 @@ export function mlResultToPreview(mlResult, medications) {
     };
   });
 
-  // Build insights[] — one per pair, plus top global side effects as extras
+  // Build insights[] - one per pair, plus top global side effects as extras
   const insights = [];
 
-  // One insight per drug pair only — severity matches the badge (harm score only).
+  // One insight per drug pair only - severity matches the badge (harm score only).
   pairs.forEach(([drugA, drugB], idx) => {
     if (insights.length >= 5) return;
     const detail     = mlResult.pair_details[idx] ?? {};
@@ -112,7 +123,7 @@ export function mlResultToPreview(mlResult, medications) {
       likelihood,
       confidence,
       shortExplanation:    `Harm score: ${score.toFixed(2)}`,
-      detailedExplanation: buildExplanation(drugA, drugB, severity, symptoms),
+      detailedExplanation: buildExplanation(drugA, drugB, severity),
     });
   });
 
@@ -141,6 +152,8 @@ export function mlResultToPreview(mlResult, medications) {
     interactions: sortedInteractions,
     confidence,
     hasSignificantFindings,
+    polypharmacyScore: typeof mlResult.polypharmacy_score === "number" ? mlResult.polypharmacy_score : null,
+    riskGrade: mlResult.risk_grade ?? null,
     sideEffects: (mlResult.side_effects ?? [])
       .map((se) => ({
         name:        se.name ?? String(se),

@@ -40,6 +40,7 @@ router.patch('/patients/:id', requireAuth, patientsController.update);
 router.delete('/patients/:id', requireAuth, patientsController.remove);
 router.get('/patients/:id/history', requireAuth, patientsController.listHistory);
 router.post('/patients/:id/history', requireAuth, patientsController.addHistory);
+router.delete('/patients/:id/history', requireAuth, patientsController.clearHistory);
 
 // --- Core API ---
 router.get('/drugs', drugsController.listDrugs);

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 // Compact, read-only log of the active patient's past analyses.
 export function PatientHistoryPanel() {
-  const { history, currentPatient } = usePatients();
+  const { history, currentPatient, clearHistory } = usePatients();
 
   if (!currentPatient || history.length === 0) return null;
 
@@ -17,7 +17,14 @@ export function PatientHistoryPanel() {
         <h3 className="text-sm font-semibold text-[var(--foreground)]">
           Analysis history
         </h3>
-        <span className="text-xs text-[var(--muted)]">· {currentPatient.name}</span>
+        <span className="flex-1 text-xs text-[var(--muted)]">· {currentPatient.name}</span>
+        <button
+          type="button"
+          onClick={clearHistory}
+          className="text-xs text-[var(--muted)] underline-offset-2 hover:text-red-500 hover:underline"
+        >
+          Clear history
+        </button>
       </div>
       <ul className="divide-y divide-[var(--border)]">
         {history.map((entry) => {

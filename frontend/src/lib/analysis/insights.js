@@ -63,7 +63,7 @@ function getDetailedExplanation(type, medications, symptoms, severity) {
     return `${medications[0]} has documented adverse effects including ${symptoms.join(", ").toLowerCase()}. Individual patient factors such as dose, duration, and renal function influence presentation.`;
   }
 
-  return `The symptom pattern of ${symptoms.join(", ").toLowerCase()} aligns with known adverse effect profiles for ${medications.join(" and ")}. Correlation does not confirm causation — evaluate timing, dose changes, and alternative diagnoses.`;
+  return `The symptom pattern of ${symptoms.join(", ").toLowerCase()} aligns with known adverse effect profiles for ${medications.join(" and ")}. Correlation does not confirm causation - evaluate timing, dose changes, and alternative diagnoses.`;
 }
 
 function buildHeadline(type, medications, symptoms) {

@@ -1,7 +1,8 @@
-import { AlertTriangle, Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Loader2, MessageSquare, ShieldAlert, ShieldCheck } from "lucide-react";
 
+import { AiExplanation } from "@/components/AiExplanation";
+import { openChatbotWithContext } from "@/components/MedicalChatbot";
 import { InteractionNetworkCard } from "@/components/insights/InteractionNetworkCard";
-import { titleCase } from "@/lib/text";
 import { cn } from "@/lib/utils";
 
 const OVERALL = {
@@ -65,7 +66,7 @@ export function ResultsPanel({ medications, preview, isAnalyzing }) {
 
   return (
     <div className="space-y-5">
-      {/* Relationship map — shown first, directly under the medications card */}
+      {/* Relationship map - shown first, directly under the medications card */}
       <InteractionNetworkCard
         medications={medications}
         interactions={preview.interactions}
@@ -87,7 +88,7 @@ export function ResultsPanel({ medications, preview, isAnalyzing }) {
 
         <div className="mt-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
           <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
-          For clinical awareness only — not a substitute for professional
+          For clinical awareness only - not a substitute for professional
           judgment.
         </div>
 
@@ -107,28 +108,26 @@ export function ResultsPanel({ medications, preview, isAnalyzing }) {
                       {sev.label}
                     </span>
                   </div>
-                  <p className="mt-2 text-sm leading-relaxed text-[var(--text2,#374151)]">
-                    {ix.detailedExplanation}
-                  </p>
-                  {ix.symptoms?.length > 0 && (
-                    <div className="mt-2.5 flex flex-wrap gap-1.5">
-                      {ix.symptoms.map((s) => (
-                        <span
-                          key={s}
-                          className="rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-medium text-[var(--foreground)]"
-                        >
-                          {titleCase(s)}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  <AiExplanation
+                    drugs={ix.medications}
+                    riskLevel={ix.severity}
+                    fallback={ix.detailedExplanation}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => openChatbotWithContext(ix.medications, ix.severity)}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-opacity hover:opacity-90 active:scale-[0.98]"
+                  >
+                    <MessageSquare className="size-4" />
+                    Ask AI for solutions &amp; alternatives
+                  </button>
                 </li>
               );
             })}
           </ul>
         ) : (
           <p className="mt-4 rounded-lg border border-[var(--border)] py-6 text-center text-sm text-[var(--muted)]">
-            All {medications.length} medications checked — no interactions found.
+            All {medications.length} medications checked - no interactions found.
           </p>
         )}
       </section>

@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 
 :root {
-  /* Font families — loaded via Google Fonts <link> in index.html */
+  /* Font families - loaded via Google Fonts <link> in index.html */
   --font-geist-sans: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-geist-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --background: #f8f9fa;
@@ -12,12 +12,12 @@
   --border: #e5e7eb;
   --primary: #0f766e;
   --primary-hover: #0d9488;
-  /* Download PDF — pending (faded light green) */
+  /* Download PDF - pending (faded light green) */
   --cta-pending-bg: #ecfdf5;
   --cta-pending-text: #6b9080;
   --cta-pending-ring: #a7f3d0;
   --cta-pending-icon: #86efac;
-  /* Download PDF — ready (saturated dark green) */
+  /* Download PDF - ready (saturated dark green) */
   --cta-ready-bg: #047857;
   --cta-ready-bg-hover: #065f46;
   --cta-ready-text: #ffffff;
@@ -119,34 +119,22 @@ body {
   background-color: var(--cta-ready-bg);
   color: var(--cta-ready-text);
   border: 1px solid var(--cta-ready-bg);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.06),
-    0 4px 12px var(--cta-ready-glow),
-    0 0 0 1px rgba(4, 120, 87, 0.08);
+  box-shadow: none;
 }
 
 .download-pdf-btn--ready:hover {
   background-color: var(--cta-ready-bg-hover);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.08),
-    0 8px 20px var(--cta-ready-glow),
-    0 0 0 1px rgba(4, 120, 87, 0.12);
-  transform: translateY(-1px);
+  box-shadow: none;
 }
 
 .download-pdf-btn--ready:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.08),
-    0 2px 8px var(--cta-ready-glow);
+  transform: scale(0.98);
+  box-shadow: none;
 }
 
 .download-pdf-btn--ready:focus-visible {
   outline: none;
-  box-shadow:
-    0 4px 12px var(--cta-ready-glow),
-    0 0 0 3px white,
-    0 0 0 5px var(--cta-focus-ring);
+  box-shadow: 0 0 0 3px white, 0 0 0 5px var(--cta-focus-ring);
 }
 
 .download-pdf-btn--loading {

@@ -24,7 +24,7 @@ export const RISK_TONE = {
   },
 };
 
-// "AV" style — kept here so history rows and cards format dates consistently.
+// "AV" style - kept here so history rows and cards format dates consistently.
 export function formatWhen(iso) {
   if (!iso) return "";
   const d = new Date(iso);

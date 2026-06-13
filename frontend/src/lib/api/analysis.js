@@ -14,3 +14,12 @@ export async function fetchDrugCatalog() {
   // Backend returns { source, drugs: string[] }
   return Array.isArray(data) ? data : (data?.drugs ?? []);
 }
+
+export async function explainInteraction({ drugs, riskLevel, sideEffects }) {
+  const data = await api.post("/explain", {
+    drugs,
+    risk_level:   riskLevel,
+    side_effects: sideEffects,
+  });
+  return data; // { explanation: string }
+}

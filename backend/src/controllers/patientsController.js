@@ -119,4 +119,15 @@ async function addHistory(req, res, next) {
   }
 }
 
-module.exports = { list, create, update, remove, listHistory, addHistory };
+// DELETE /api/patients/:id/history — wipe all history entries for a patient.
+async function clearHistory(req, res, next) {
+  try {
+    await ownedPatient(req.doctor.id, req.params.id);
+    await AnalysisHistory.destroy({ where: { patientId: req.params.id } });
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { list, create, update, remove, listHistory, addHistory, clearHistory };

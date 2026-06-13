@@ -1,4 +1,5 @@
 import { generateMedicationReportPdf } from "@/lib/pdf/generateReport";
+import { getChatHistory } from "@/components/MedicalChatbot";
 import { useCallback, useState } from "react";
 
 export function DownloadPdfButton({
@@ -17,7 +18,7 @@ export function DownloadPdfButton({
     setState("loading");
     try {
       await new Promise((resolve) => setTimeout(resolve, 400));
-      generateMedicationReportPdf(reportData);
+      generateMedicationReportPdf(reportData, getChatHistory());
       setState("success");
       setTimeout(() => setState("idle"), 2200);
     } catch {
@@ -31,7 +32,7 @@ export function DownloadPdfButton({
       ? "PDF downloaded successfully"
       : isReady
         ? "Ready to download PDF report"
-        : "PDF not ready — add at least 2 medications first";
+        : "PDF not ready - add at least 2 medications first";
 
   return (
     <button
@@ -81,14 +82,7 @@ export function DownloadPdfButton({
               d="M12 10.5v6m0 0l-3-3m3 3l3-3M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12M12 16.5V3.75"
             />
           </svg>
-          <span className="flex flex-col items-start leading-tight sm:flex-row sm:items-center sm:gap-0">
-            <span>Download PDF</span>
-            {isReady && (
-              <span className="hidden text-[10px] font-medium opacity-90 sm:ml-1.5 sm:inline sm:text-xs">
-                · Ready
-              </span>
-            )}
-          </span>
+          <span>Download PDF</span>
         </>
       )}
     </button>

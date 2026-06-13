@@ -10,4 +10,5 @@ export const patientsApi = {
   remove: (id) => api.del(`/patients/${id}`),
   listHistory: (id) => api.get(`/patients/${id}/history`),
   addHistory: (id, entry) => api.post(`/patients/${id}/history`, entry),
+  clearHistory: (id) => api.del(`/patients/${id}/history`),
 };

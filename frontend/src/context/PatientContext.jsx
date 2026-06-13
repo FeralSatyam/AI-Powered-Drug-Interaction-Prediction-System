@@ -120,6 +120,16 @@ export function PatientProvider({ children }) {
     [currentPatientId]
   );
 
+  const clearHistory = useCallback(async () => {
+    if (!currentPatientId) return;
+    try {
+      await patientsApi.clearHistory(currentPatientId);
+      setHistory([]);
+    } catch (err) {
+      toast.error(err.message || "Could not clear history");
+    }
+  }, [currentPatientId]);
+
   const value = {
     patients,
     currentPatient,
@@ -133,6 +143,7 @@ export function PatientProvider({ children }) {
     setMedications,
     persistMedications,
     saveAnalysis,
+    clearHistory,
   };
 
   return (

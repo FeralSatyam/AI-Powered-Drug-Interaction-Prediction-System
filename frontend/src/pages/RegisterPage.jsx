@@ -29,7 +29,7 @@ export function RegisterPage() {
     setSubmitting(true);
     try {
       const doctor = await register(form);
-      toast.success(`Account created — welcome, ${doctor.fullName.split(" ")[0]}`);
+      toast.success(`Account created - welcome, ${doctor.fullName.split(" ")[0]}`);
       navigate("/", { replace: true });
     } catch (err) {
       toast.error(err.message || "Could not create account");

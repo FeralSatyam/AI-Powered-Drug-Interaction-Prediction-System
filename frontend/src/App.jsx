@@ -9,7 +9,7 @@ import { RegisterPage } from "@/pages/RegisterPage";
 export default function App() {
   return (
     <Routes>
-      {/* Auth screens — only reachable when signed out. */}
+      {/* Auth screens - only reachable when signed out. */}
       <Route element={<RedirectIfAuthed />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

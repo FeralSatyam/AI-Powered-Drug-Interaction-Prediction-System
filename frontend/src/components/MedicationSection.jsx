@@ -20,12 +20,12 @@ export function MedicationSection({
 
   // Default search uses dataset-confirmed drugs only.
   // If the ML catalog returns human-readable names (not STITCH IDs like CIDxxxxxxxxx),
-  // use those instead — the dataset list acts as the fallback in either case.
+  // use those instead - the dataset list acts as the fallback in either case.
   const onSearch = useMemo(() => {
     if (Array.isArray(drugCatalog) && drugCatalog.length > 0) {
       const hasStitchIds = drugCatalog[0]?.startsWith?.("CID");
       if (!hasStitchIds) {
-        // Catalog has readable names — search against it
+        // Catalog has readable names - search against it
         return (query) => {
           const q = query.trim().toLowerCase();
           if (!q) return drugCatalog.slice(0, 20);
@@ -93,7 +93,7 @@ export function MedicationSection({
             ? `Add ${2 - medications.length} more medication${
                 2 - medications.length === 1 ? "" : "s"
               } to analyze`
-            : `${medications.length} medications ready — press Analyze`}
+            : `${medications.length} medications ready - press Analyze`}
         </p>
         <Button
           type="button"
