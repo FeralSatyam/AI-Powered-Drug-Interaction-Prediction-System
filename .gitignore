@@ -4,7 +4,7 @@ data/
 !frontend/src/lib/data/
 src/__pycache__
 __pycache__/
-
+drug_features.npy
 # Node / frontend
 node_modules
 .env
