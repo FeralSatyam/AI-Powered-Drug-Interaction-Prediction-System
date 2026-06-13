@@ -4,7 +4,7 @@ import { Loader2, ScanSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/Chip";
 import { SearchCombobox } from "@/components/ui/SearchCombobox";
-import { searchMedications } from "@/lib/data/medications";
+import { searchDatasetMedications } from "@/lib/data/datasetMedications";
 
 export function MedicationSection({
   medications,
@@ -17,29 +17,29 @@ export function MedicationSection({
 }) {
   const canAnalyze = medications.length >= 2 && !isAnalyzing;
 
-  // When the ML catalog is available and contains human-readable names (not
-  // raw STITCH IDs), use it as the suggestion pool. Otherwise fall back to
-  // the static list. STITCH IDs look like "CID000xxxxxx" — not useful for search.
-  const catalogNames = useMemo(() => {
-    if (!Array.isArray(drugCatalog) || drugCatalog.length === 0) return null;
-    const hasStitchIds = drugCatalog[0]?.startsWith?.("CID");
-    if (hasStitchIds) return null; // catalog is STITCH IDs — not searchable by name
-    return drugCatalog;
-  }, [drugCatalog]);
-
+  // Default search uses dataset-confirmed drugs only.
+  // If the ML catalog returns human-readable names (not STITCH IDs like CIDxxxxxxxxx),
+  // use those instead — the dataset list acts as the fallback in either case.
   const onSearch = useMemo(() => {
-    if (!catalogNames) return searchMedications;
-    return (query) => {
-      const q = query.trim().toLowerCase();
-      if (!q) return catalogNames.slice(0, 20);
-      const matches = catalogNames.filter((n) => n.toLowerCase().includes(q));
-      return matches.sort((a, b) => {
-        const aP = a.toLowerCase().startsWith(q) ? 0 : 1;
-        const bP = b.toLowerCase().startsWith(q) ? 0 : 1;
-        return aP - bP || a.localeCompare(b);
-      });
-    };
-  }, [catalogNames]);
+    if (Array.isArray(drugCatalog) && drugCatalog.length > 0) {
+      const hasStitchIds = drugCatalog[0]?.startsWith?.("CID");
+      if (!hasStitchIds) {
+        // Catalog has readable names — search against it
+        return (query) => {
+          const q = query.trim().toLowerCase();
+          if (!q) return drugCatalog.slice(0, 20);
+          const matches = drugCatalog.filter((n) => n.toLowerCase().includes(q));
+          return matches.sort((a, b) => {
+            const aP = a.toLowerCase().startsWith(q) ? 0 : 1;
+            const bP = b.toLowerCase().startsWith(q) ? 0 : 1;
+            return aP - bP || a.localeCompare(b);
+          });
+        };
+      }
+    }
+    // Catalog unavailable or returns STITCH IDs: use dataset-confirmed drug names
+    return searchDatasetMedications;
+  }, [drugCatalog]);
 
   return (
     <section

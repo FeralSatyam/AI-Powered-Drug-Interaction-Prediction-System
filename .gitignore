@@ -5,6 +5,7 @@
 *.pkl
 .venv
 data/
+!frontend/src/lib/data/
 src/__pycache__
 __pycache__/
 
