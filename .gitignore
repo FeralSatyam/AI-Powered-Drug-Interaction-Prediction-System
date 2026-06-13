@@ -1,3 +1,4 @@
+# Python / ML
 *.npy
 *.npz
 *.pt
@@ -5,3 +6,10 @@
 .venv
 data/
 src/__pycache__
+__pycache__/
+
+# Node / frontend
+node_modules
+.env
+*.log
+npm-debug.log*
