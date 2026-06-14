@@ -98,6 +98,6 @@ POST /predict  { "drugs": ["Warfarin", "Aspirin", "Ibuprofen"] }
 
 ## References
 
-- Zitnik M, Agrawal M, Leskovec J. *Modeling polypharmacy side effects with graph convolutional networks.* Bioinformatics 2018. — [paper](https://academic.oup.com/bioinformatics/article/34/13/i457/5045770) · [dataset](http://snap.stanford.edu/decagon/)
+- Zitnik M, Agrawal M, Leskovec J. *Modeling polypharmacy side effects with graph convolutional networks.* Bioinformatics 2018. — [dataset](http://snap.stanford.edu/decagon/)
 - Hamilton WL et al. *Inductive representation learning on large graphs.* NeurIPS 2017.
 - SIDER side-effect database · ChEMBL 37 · STRING PPI network
