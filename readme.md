@@ -1,4 +1,4 @@
-# PharmaSafe — Polypharmacy Risk Detection
+# Polypharmacy Risk Detection
 
 A GNN-powered clinical tool that predicts dangerous drug combinations before they reach patients.
 
